@@ -1,0 +1,27 @@
+Setting up the MinGW64 environment for building the Bluej launcher
+------------------------------------------------------------------
+
+MinGW is a GNU-like environment for Windows.  MinGW64 is a 64-bit version.
+The launcher must be 64-bit because the JVM (including its DLLs) is 64-bit, 
+and thus a 64-bit environment (and 64-bit Windows) is required to build the 
+launcher.
+
+Download and install the MinGW64 distribution from:
+
+https://sourceforge.net/projects/mingw-w64/files/
+
+Beneath the files list are a list of quick links.  Download the version:
+
+    GCC-8.1.0 x86_64-posix-seh
+    
+Direct link is currently:
+
+https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+
+Make sure build.properties has a line like this pointing to the mingw64 directory:
+
+mingw_root=C:/mingw64/mingw64
+
+(If you unzip MinGW64 to c:\mingw64, you want to point the variable to the mingw64
+directory that is inside that, as above, or manually collapse the directories if
+you prefer, to avoid the duplicated path.)

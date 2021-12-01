@@ -1,0 +1,48 @@
+#!/bin/sh
+
+unset JAVAPATH
+
+FOUND="false"
+for VMNAME in java-11-openjdk java-11-openjdk-armhf ; do
+    for JDKCANDIDATE in /usr/lib/jvm/"$VMNAME"* ; do
+        if [ -e "$JDKCANDIDATE"/bin/javac ]; then
+	        JAVAPATH="$JDKCANDIDATE"
+                FOUND="true"
+	        break
+        fi
+    done
+    if [ x"$FOUND" = x"true" ]; then
+       break;
+    fi
+done
+
+if [ x"$JAVAPATH" = x"" ]; then
+	echo "A suitable JDK couldn't be located. You may need to edit the"
+	echo "/usr/bin/bluej launch script."
+	exit 1
+fi
+	
+CP="/usr/share/bluej/bluej.jar"
+JFXRTOPT=""
+JFXRTOPT2=""
+
+# If JavaFX library is not within the JDK, look for OpenJFX:
+if [ ! -e "$JAVAPATH/lib/javafx.graphics.jar" ]; then
+    if [ -e "/usr/share/java/javafx-graphics-11.jar" ]; then
+        JAVAFXPATH=/usr/share/java
+        JAVAFXJARS="$JAVAFXPATH/javafx-base-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-controls-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-fxml-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-graphics-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-media-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-properties-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-swing-11.jar"
+        JAVAFXJARS="$JAVAFXJARS:$JAVAFXPATH/javafx-web-11.jar"
+        CP="$CP:$JAVAFXJARS"
+        JFXRTOPT="-javafxpath=$JAVAFXPATH"
+        JFXRTOPT2="-javafxjars=$JAVAFXJARS"
+    fi
+fi
+
+"$JAVAPATH/bin/java" -Djdk.gtk.version=2 -Dawt.useSystemAAFontSettings=on -Xmx512M \
+    -cp "$CP" bluej.Boot ${JFXRTOPT:+"$JFXRTOPT"} ${JFXRTOPT2:+"$JFXRTOPT2"} "$@"

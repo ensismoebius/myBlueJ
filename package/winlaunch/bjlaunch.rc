@@ -1,0 +1,31 @@
+#include <windows.h>
+#include "resources.h"
+
+LANGUAGE 0, 0
+
+
+// MAINICON ICON "example-vista-icon.ico"
+#ifndef GREENFOOT
+MAINICON ICON "bluej-vista.ico"
+#else
+MAINICON ICON "greenfoot-icon-256-shadow.ico"
+#endif
+2 ICON "vmselect.ico"
+
+#ifndef GREENFOOT
+MANIFEST_RESOURCE_ID RT_MANIFEST "bjmanifest.xml"
+#else
+MANIFEST_RESOURCE_ID RT_MANIFEST "gfmanifest.xml"
+#endif
+
+1 VERSIONINFO
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0
+FILEOS VOS_NT
+FILETYPE VFT_APP
+FILESUBTYPE 0
+#ifdef GREENFOOT
+#include "greenfoot-version.rc"
+#else
+#include "bluej-version.rc"
+#endif

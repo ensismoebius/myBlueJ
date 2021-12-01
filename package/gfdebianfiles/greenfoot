@@ -1,0 +1,50 @@
+#!/bin/sh
+
+unset JAVAPATH
+
+FOUND="false"
+for VMNAME in java-11-openjdk java-11-openjdk-armhf ; do
+    for JDKCANDIDATE in /usr/lib/jvm/"$VMNAME"* ; do
+        if [ -e "$JDKCANDIDATE"/bin/javac ]; then
+            JAVAPATH="$JDKCANDIDATE"
+                FOUND="true"
+            break
+        fi
+    done
+    if [ x"$FOUND" = x"true" ]; then
+       break;
+    fi
+done
+
+if [ x"$JAVAPATH" = x"" ]; then
+    echo "A suitable JDK couldn't be located. You may need to edit the"
+    echo "/usr/bin/greenfoot launch script."
+    exit 1
+fi
+
+CP="/usr/share/greenfoot/bluej.jar"
+JFXRTOPT=""
+
+# If JavaFX library is not within the JDK, look for OpenJFX:
+if [ ! -e "$JAVAPATH/lib/javafx.graphics.jar" ]; then
+    if [ -e "/usr/share/openjfx/lib/javafx.graphics.jar" ]; then
+        JAVAFXPATH=/usr/share/openjfx
+        CP="$CP:$JAVAFXPATH/lib/javafx.base.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.controls.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.fxml.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.graphics.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.media.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.properties.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.swing.jar"
+        CP="$CP:$JAVAFXPATH/lib/javafx.web.jar"
+        JFXRTOPT="-javafxpath=$JAVAFXPATH"
+    fi
+fi
+
+"$JAVAPATH/bin/java" -Dawt.useSystemAAFontSettings=on -Xmx512M \
+    -cp "$CP" bluej.Boot \
+    -greenfoot=true -bluej.compiler.showunchecked=false \
+    -greenfoot.scenarios=/usr/share/doc/Greenfoot/scenarios \
+    -greenfoot.url.javadoc=file:///usr/share/doc/Greenfoot/API/ \
+    ${JFXRTOPT:+"$JFXRTOPT"} \
+    "$@"
